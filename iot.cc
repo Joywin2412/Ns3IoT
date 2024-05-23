@@ -88,16 +88,16 @@ int main(int argc, char* argv[])
     Ptr<ListPositionAllocator> allocator = CreateObject<ListPositionAllocator>();
 
     // Gateway position (center)
-    allocator->Add(Vector(0, 0, 0));
+    // allocator->Add(Vector(500, 475.5, 0));
 
     // End devices positions (circular arrangement around the gateway)
-    double radius = 1000.0;  // distance from the gateway
+    double radius = 475.5;  // distance from the gateway
     for (int i = 0; i < 10; ++i)
     {
         double angle = i * (2 * M_PI / 10); // 10 nodes evenly spaced in a circle
         double x = radius * cos(angle);
         double y = radius * sin(angle);
-        allocator->Add(Vector(x, y, 0));
+        allocator->Add(Vector(500+x, 475.5+y, 0));
     }
 
     mobility.SetPositionAllocator(allocator);
@@ -139,8 +139,19 @@ int main(int argc, char* argv[])
     NodeContainer gateways;
     gateways.Create(1);
 
-    // Install mobility model for the gateway
-    mobility.Install(gateways);
+
+    MobilityHelper mobility3;
+     allocator = CreateObject<ListPositionAllocator>();
+
+    // Gateway position (center)
+    allocator->Add(Vector(500, 475.5, 0));
+
+    // End devices positions (circular arrangement around the gateway)
+   
+    mobility3.SetPositionAllocator(allocator);
+    mobility3.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    // Install mobility3 model for the gateway
+    mobility3.Install(gateways);
 
     // Create a netdevice for the gateway
     phyHelper.SetDeviceType(LoraPhyHelper::GW);
@@ -152,7 +163,7 @@ int main(int argc, char* argv[])
     // 
     // 
 
-    uint16_t numberOfNodes = 2;
+    uint16_t numberOfNodes = 1;
   double simTime = 1.1;
   double distance = 60.0;
   double interPacketInterval = 100;
@@ -199,16 +210,22 @@ int main(int argc, char* argv[])
   NodeContainer enbNodes;
   enbNodes.Create(numberOfNodes);
   ueNodes.Create(numberOfNodes);
-    // ueNodes.get
+  ueNodes.Get(0) = gateways.Get(0);
+  
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  for (uint16_t i = 0; i < numberOfNodes; i++)
-  {
-    positionAlloc->Add (Vector(distance * i, 0, 0));
-  }
+  Ptr<ListPositionAllocator> positionAlloc2 = CreateObject<ListPositionAllocator> ();
+  positionAlloc2->Add (Vector(500, 475.5, 0));
+  positionAlloc->Add (Vector(750, 475.5, 0));
+  // for (uint16_t i = 0; i < numberOfNodes; i++)
+  // {
+  //   positionAlloc->Add (Vector(distance * i, 0, 0));
+  // }
   MobilityHelper mobility2;
   mobility2.SetMobilityModel("ns3::ConstantPositionMobilityModel");
   mobility2.SetPositionAllocator(positionAlloc);
   mobility2.Install(enbNodes);
+  //  mobility2.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+  mobility2.SetPositionAllocator(positionAlloc2);
   mobility2.Install(ueNodes);
 
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
@@ -270,23 +287,6 @@ int main(int argc, char* argv[])
   }
   serverApps.Start (Seconds (0.01));
   clientApps.Start (Seconds (0.01));
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	
