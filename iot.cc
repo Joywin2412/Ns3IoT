@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
     Ptr<ListPositionAllocator> allocator = CreateObject<ListPositionAllocator>();
 
     // Gateway position (center)
-    allocator->Add(Vector(0, 0, 0));
+    // allocator->Add(Vector(0, 0, 0));
 
     // End devices positions (circular arrangement around the gateway)
     double radius = 1000.0;  // distance from the gateway
@@ -139,8 +139,19 @@ int main(int argc, char* argv[])
     NodeContainer gateways;
     gateways.Create(1);
 
-    // Install mobility model for the gateway
-    mobility.Install(gateways);
+
+ MobilityHelper mobility3;
+     allocator = CreateObject<ListPositionAllocator>();
+
+    // Gateway position (center)
+    allocator->Add(Vector(0, 0, 0));
+
+    // End devices positions (circular arrangement around the gateway)
+   
+    mobility3.SetPositionAllocator(allocator);
+    mobility3.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    // Install mobility3 model for the gateway
+    mobility3.Install(gateways);
 
     // Create a netdevice for the gateway
     phyHelper.SetDeviceType(LoraPhyHelper::GW);
@@ -199,7 +210,8 @@ int main(int argc, char* argv[])
   NodeContainer enbNodes;
   enbNodes.Create(numberOfNodes);
   ueNodes.Create(numberOfNodes);
-    // ueNodes.get
+  ueNodes.Get(0) = gateways.Get(0);
+  
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   for (uint16_t i = 0; i < numberOfNodes; i++)
   {
@@ -270,23 +282,6 @@ int main(int argc, char* argv[])
   }
   serverApps.Start (Seconds (0.01));
   clientApps.Start (Seconds (0.01));
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	
